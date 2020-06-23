@@ -5,6 +5,7 @@ const Grid = () => {
     const numCols = 30;
     const numRows = 30;
 
+    // BUILD THE GRID
     const buildGrid = () => {
         let cols = [];
         for (let i = 0; i < numCols; i++) {
@@ -15,38 +16,46 @@ const Grid = () => {
     }
 
 
-    const buildNewGrid = () => {
-        let newGrid = grid;
-        for (let x = 0; x < numCols; x++) {
-            for (let y = 0; y < numRows; y++) {
-
-                // newGrid.push(Array.from(Array(numRows), () => 0))
-                newGrid[x][y] = 1
-                console.log('newgrid[x][y]', x, y, newGrid[x][y])
-
-            }
-        }
-        return newGrid
-    }
-
-
-
     // STATE
     const [grid, setGrid] = useState(buildGrid())
     // const [gridNew, setGridNew] = useState(buildGrid())
     const [running, setRunning] = useState(false)
+    const [gen, setGen] = useState(0)
+    const [count, setCount] = useState(0)
+
 
     const toggle = () => {
-        setRunning(!running)
+        running ? setRunning(false) : setRunning(true)
+        console.log('clicked start/stop')
     }
+
+    const reset = () => {
+        setRunning(false);
+        setGen(0);
+        setGrid(buildGrid());
+    }
+
 
     const handleNext = () => {
         setGrid(newGrid)
     }
 
-    // useEffect(() => {
-    //     running ? setGrid(buildGrid()) : console.log('stop')
-    // }, [running, setRunning, grid])
+    useEffect(() => {
+        let interval = null;
+        if (running) {
+            interval = setInterval(() => {
+                setGrid(newGrid)
+                setGen(gen => gen + 1);
+            }, 10);
+        } else if (!running && gen !== 0) {
+            clearInterval(interval);
+        }
+        return () => clearInterval(interval);
+    }, [running, gen]);
+
+    console.log('gen', gen)
+    // console.log('running', running, "gen", gen)
+
 
     const newGrid = grid.map((row, row_index) => (
         row.map((xy, col_index) => {
@@ -63,31 +72,29 @@ const Grid = () => {
                 count += grid[row_index + 1][col_index - 1];
                 // console.log('count', count)
             };
-            if (xy === 1) {
-                if (count < 2 || count > 3) {
-                    xy = 0
-                }
-                else {
-                    xy = 1
-                }
+            if (xy === 1 && (count < 2 || count > 3)) {
+                xy = 0
+            }
+            else if (xy === 0 && count === 3) {
+                xy = 1
             }
             else {
-                if (count === 3) {
-                    xy = 1
-                }
+                xy = xy
             }
 
-            console.log('row', row_index, "col", col_index, "value", grid[row_index][col_index])
+            // console.log('row', row_index, "col", col_index, "value", grid[row_index][col_index])
             return xy
         })
     ))
 
-    console.log('pair', grid[0][0])
+    // console.log('pair', grid[0][0])
 
     return (
         <>
-            {/* <button onClick={toggle}>{running ? 'stop' : 'start'}</button> */}
+            <button onClick={() => (setRunning(!running))}>{running ? 'pause' : 'start'}</button>
+            <button onClick={reset}>reset</button>
             <button onClick={handleNext}>{running ? 'next' : 'next'}</button>
+            <div>Gen: {gen}</div>
             <div
                 style={{
                     display: 'grid',
