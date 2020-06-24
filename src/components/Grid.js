@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 
 
 const Grid = () => {
     // GRID SIZE
     const [gridSize, setGridSize] = useState({
         cols: 60,
-        rows: 30
+        rows: 40
     });
 
     // const numCols = gridSize.cols;
@@ -159,65 +160,114 @@ const Grid = () => {
 
     return (
         <>
-            <button onClick={() => (setRunning(!running))}>{running ? 'pause' : 'start'}</button>
-            <button onClick={reset}>reset</button>
-            <button onClick={random}>random</button>
-            <button onClick={handleNext}>{running ? 'next' : 'next'}</button>
-            {/* <input type="text" value={cellSize} onChange={handleCellSize} /> */}
-            <div>
-                <h5>Speed: {speed} ms</h5>
-                <button onClick={slower}>Slower</button>
-                <button onClick={faster}>Faster</button>
-            </div>
-            <div>
-                <h5>Cell Size: {cellSize} px</h5>
-                <button onClick={smaller}>Smaller</button>
-                <button onClick={bigger}>Bigger</button>
-            </div>
-            <div>
-                <h5>Grid cells: {gridSize.cols} x {gridSize.rows}</h5>
-                <form onSubmit={submitGridSize}>
-                    <span>
-                        <label>Columns:</label>
-                        <input type="text" name="cols" placeholder="columns" onChange={changeGridSize} value={gridSize.cols} />
-                    </span>
-                    <span> </span>
-                    <span>
-                        <label>Rows:</label>
-                        <input type="text" name="rows" placeholder="rows" onChange={changeGridSize} value={gridSize.rows} />
-                    </span>
-                    <input type="submit" />
-                </form>
-                {/* <button onClick={smallerGrid}>Fewer</button>
+            <Header>
+                <h1>Conway's Game of Life</h1>
+            </Header>
+            <MainWrap>
+                <Sub>
+                    <div>
+                        <button onClick={() => (setRunning(!running))}>{running ? 'pause' : 'start'}</button>
+                        <button onClick={reset}>reset</button>
+                        <button onClick={random}>random</button>
+                        <button onClick={handleNext}>{running ? 'next' : 'next'}</button>
+                    </div>
+
+                    <div>
+                        <h5>Speed: {speed} ms</h5>
+                        <button onClick={slower}>Slower</button>
+                        <button onClick={faster}>Faster</button>
+                    </div>
+                    <div>
+                        <h5>Cell Size: {cellSize} px</h5>
+                        <button onClick={smaller}>Smaller</button>
+                        <button onClick={bigger}>Bigger</button>
+                    </div>
+                    <div>
+                        <h5>Grid cells: {gridSize.cols} x {gridSize.rows}</h5>
+                        <form onSubmit={submitGridSize}>
+                            <span>
+                                <label>Columns:</label>
+                                <input type="text" name="cols" placeholder="columns" onChange={changeGridSize} value={gridSize.cols} />
+                            </span>
+                            <span> </span>
+                            <span>
+                                <label>Rows:</label>
+                                <input type="text" name="rows" placeholder="rows" onChange={changeGridSize} value={gridSize.rows} />
+                            </span>
+                            <input type="submit" />
+                        </form>
+                        {/* <button onClick={smallerGrid}>Fewer</button>
                 <button onClick={biggerGrid}>More</button> */}
-            </div>
-            <div>Gen: {gen}</div>
-            <div
-                style={{
-                    display: 'grid',
-                    gridTemplateColumns: `repeat(${gridSize.cols}, ${cellSize}px)`
-                }}
-            >
-                {
-                    grid.map((row, row_index) => (
-                        row.map((box, col_index) => (
-                            <div
-                                onClick={() => select(row_index, col_index)}
-                                key={`${row_index}-${col_index}`}
-                                style={{
-                                    width: `${cellSize}px`,
-                                    height: `${cellSize}px`,
-                                    background: box ? 'black' : 'white',
-                                    border: 'solid 1px black'
-                                }}>
-                                {/* <span style={{ color: 'blue' }}>{row}</span> */}
-                            </div>
-                        ))
-                    ))
-                }
-            </div >
+                    </div>
+                    <div>Gen: {gen}</div>
+                </Sub>
+                <Sub>
+                    <div
+                        style={{
+                            display: 'grid',
+                            gridTemplateColumns: `repeat(${gridSize.cols}, ${cellSize}px)`
+                        }}
+                    >
+                        {
+                            grid.map((row, row_index) => (
+                                row.map((box, col_index) => (
+                                    <div
+                                        onClick={() => select(row_index, col_index)}
+                                        key={`${row_index}-${col_index}`}
+                                        style={{
+                                            width: `${cellSize}px`,
+                                            height: `${cellSize}px`,
+                                            background: box ? 'black' : 'white',
+                                            border: 'solid 1px black'
+                                        }}>
+                                        {/* <span style={{ color: 'blue' }}>{row}</span> */}
+                                    </div>
+                                ))
+                            ))
+                        }
+                    </div >
+
+                </Sub>
+            </MainWrap>
+            <Footer>
+                <h3>Rules</h3>
+                <ul>
+                    <li>Any live cell with fewer than two live neighbours dies, as if by underpopulation.</li>
+                    <li>Any live cell with two or three live neighbours lives on to the next generation.</li>
+                    <li>Any live cell with more than three live neighbours dies, as if by overpopulation.</li>
+                    <li>Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.</li>
+                </ul>
+            </Footer>
         </>
     )
 }
 
 export default Grid
+
+
+// STYLED COMPONENTS
+
+const MainWrap = styled.div`
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    margin: 0 auto;
+`;
+
+const Sub = styled.section`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 0 5%;
+`;
+
+const Header = styled.div`
+    margin: 0 auto;
+    width: 80%;
+`;
+
+const Footer = styled.div`
+    margin: 0 auto;
+    width: 60%;
+`;
